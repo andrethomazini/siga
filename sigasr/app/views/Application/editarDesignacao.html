@@ -5,7 +5,7 @@
 		#{if designacao?.idConfiguracao}
 		<h2 class="gt-form-head">Designação</h2>
 		#{/if} #{else}
-		<h2 class="gt-form-head">Nova designação</h2>
+		<h2 class="gt-form-head">Cadastro de Designação</h2>
 		#{/else}
 
 		<div class="gt-form gt-content-box">
@@ -100,9 +100,10 @@
 				#{/select}
 			</div>
 			<div class="gt-form-row">
-				<input type="submit" value="Salvar"
-					class="gt-btn-medium gt-btn-left" />#{if
-				designacao?.idConfiguracao} <input type="button" value="Desativar"
+				<input type="submit" value="Gravar"
+					class="gt-btn-medium gt-btn-left" />
+					<a href="@{Application.listarDesignacao}" class="gt-btn-medium gt-btn-left">Cancelar</a>
+					#{if designacao?.idConfiguracao} <input type="button" value="Desativar"
 					class="gt-btn-medium gt-btn-left"
 					onclick="location.href='@{Application.desativarDesignacao()}?id=${designacao.idConfiguracao}'" />
 				#{/if}

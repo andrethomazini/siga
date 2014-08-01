@@ -6,7 +6,7 @@ public class DadosRI {
 	public String sigla;
 	public String titulo;
 	public String conteudo;
-	public String uri;
+	public String url;
 	public String acesso;
 	public boolean ativo;
 	public Date ultimaAtualizacao;
