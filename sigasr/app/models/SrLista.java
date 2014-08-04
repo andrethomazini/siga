@@ -16,6 +16,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -62,6 +63,18 @@ public class SrLista extends HistoricoSuporte {
 
 	@Column(name = "NOME_LISTA")
 	public String nomeLista;
+	
+	@Lob
+	@Column(name = "DESCR_ABRANGENCIA", length = 8192)
+	public String descrAbrangencia;
+	
+	@Lob
+	@Column(name = "DESCR_JUSTIFICATIVA", length = 8192)
+	public String descrJustificativa;
+	
+	@Lob
+	@Column(name = "DESCR_PRIORIZACAO", length = 8192)
+	public String descrPriorizacao;
 
 	@ManyToOne
 	@JoinColumn(name = "ID_LOTA_CADASTRANTE", nullable = false)

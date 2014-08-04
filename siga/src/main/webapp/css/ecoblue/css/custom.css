@@ -472,3 +472,7 @@ DIV.gt-tag-cloud a:hover {
 del {
 	text-decoration: line-through !important;
 }
+
+.select-acao {
+	width: 300px;
+}

@@ -11,7 +11,6 @@
 	<mod:entrevista>
 		<c:choose>
 			<c:when test="${doc.exMobilPai.doc.exModelo.idMod == ID_MODELO_PAI}">
-				<mod:obrigatorios />
 				<mod:grupo>
 					<mod:monetario var="descontoSalario" formataNum="sim"
 						extensoNum="sim" titulo="Desconto Salario (WEmul)" reler="sim" />

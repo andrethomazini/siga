@@ -18,6 +18,27 @@
 					name="lista.nomeLista"
 					value="${lista?.nomeLista}" size="100"/>
 			</div>
+			<div class="gt-form-row gt-width-66">
+				<label>Abrangência</label>
+				<textarea cols="85" rows="5" name="descrAbrangencia"
+					id="descrAbrangencia">${lista.descrAbrangencia}</textarea>
+				<span style="color: red">#{error
+					'lista.descrAbrangencia' /}</span>
+			</div>
+			<div class="gt-form-row gt-width-66">
+				<label>Justificativa</label>
+				<textarea cols="85" rows="5" name="lista.descrJustificativa"
+					id="descrJustificativa">${lista.descrJustificativa}</textarea>
+				<span style="color: red">#{error
+					'lista.descrJustificativa' /}</span>
+			</div>
+			<div class="gt-form-row gt-width-66">
+				<label>Priorização</label>
+				<textarea cols="85" rows="5" name="lista.descrPriorizacao"
+					id="descrPriorizacao"">${lista.descrPriorizacao}</textarea>
+				<span style="color: red">#{error
+					'lista.descrPriorizacao"' /}</span>
+			</div>
 			<div class="gt-form-row">
 				<input type="hidden" name="lotaTitular" value="${lotaTitular.idLotacao}">
 				<input type="hidden" name="lista.lotaCadastrante" value="${lotaTitular.idLotacao}">

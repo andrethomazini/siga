@@ -32,6 +32,34 @@
 					name="acao.descrAcao"
 					value="${acao?.descrAcao}" size="100"/>
 			</div>
+			
+			<div class="gt-form-row gt-width-66">
+				<label>Tipo de ação</label>
+					#{select name:'acao.tipoAcao',
+					items:models.SrTipoAcao.values(),
+					labelProperty:'descrTipoAcao',
+					value:acao.tipoAcao,
+					class:'select-acao' /}
+			</div>
+			
+			<div class="gt-form-row gt-width-66">
+				<label>Tipo de execução pelo Pré-atendimento</label>
+					#{select name:'acao.tipoExecucao',
+					items:models.SrTipoExecucaoAcao.values(),
+					labelProperty:'descrTipoExecucaoAcao',
+					value:acao.tipoExecucao,
+					class:'select-acao' /}
+			</div>
+			
+			<div class="gt-form-row gt-width-66">
+				<label>Forma de atendimento</label>
+					#{select name:'acao.formaAtendimento',
+					items:models.SrFormaAtendimentoAcao.values(),
+					labelProperty:'descFormaAtendimentoAcao',
+					value:acao.formaAtendimento,
+					class:'select-acao'/}
+			</div>
+			
 			<div class="gt-form-row">
 				<input type="submit" value="Gravar"
 					class="gt-btn-medium gt-btn-left" />
