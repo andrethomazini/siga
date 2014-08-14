@@ -196,15 +196,15 @@ public class SrLista extends HistoricoSuporte {
 
 		if (sols.size() != getSolicitacaoSet().size())
 			throw new IllegalArgumentException(
-					"O número de elementos passados ("
+					"O nÃ­mero de elementos passados ("
 							+ sols.size()
-							+ ") é diferente do número de solicitações existentes na lista ("
+							+ ") Ã© diferente do nÃºmero de solicitaÃ§Ãµes existentes na lista ("
 							+ getSolicitacaoSet().size() + ")");
 
 		for (SrSolicitacao sol : sols) {
 			if (!sol.isEmLista(this))
-				throw new IllegalArgumentException("A solicitação "
-						+ sol.getCodigo() + " não faz parte da lista");
+				throw new IllegalArgumentException("A solicitaÃ§Ã£o "
+						+ sol.getCodigo() + " nÃ£o faz parte da lista");
 		}
 
 		this.recalcularPrioridade(cadastrante, lotaCadastrante, sols);
