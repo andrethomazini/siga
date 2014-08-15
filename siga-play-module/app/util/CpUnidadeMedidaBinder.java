@@ -4,8 +4,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import br.gov.jfrj.siga.cp.CpUnidadeMedida;
+import play.data.binding.Global;
 import play.data.binding.TypeBinder;
 
+@Global
 public class CpUnidadeMedidaBinder implements TypeBinder<CpUnidadeMedida> {
 
 	@Override
