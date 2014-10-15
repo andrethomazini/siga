@@ -302,19 +302,19 @@
 			method="aCarregarListaModelos">
 			<result>/paginas/expediente/lista_combo_modelo.jsp</result>
 		</action>
-		<action name="exibir" class="br.gov.jfrj.webwork.action.ExDocumentoAction"
-			method="aExibir">
+		<action name="exibirAntigo" class="br.gov.jfrj.webwork.action.ExDocumentoAction"
+			method="aExibirAntigo">
 			<result>
-				/paginas/expediente/exibe.jsp?podeExibir="true"
+				/paginas/expediente/exibeAntigo.jsp?podeExibir="true"
 			</result>
 			<result name="reservado">
 				/paginas/expediente/cuidado_reserva.jsp?"
 			</result>
 		</action>
-		<action name="exibirNovo" class="br.gov.jfrj.webwork.action.ExDocumentoAction"
-			method="aExibirNovo">
+		<action name="exibir" class="br.gov.jfrj.webwork.action.ExDocumentoAction"
+			method="aExibir">
 			<result>
-				/paginas/expediente/exibeNovo.jsp?podeExibir="true"
+				/paginas/expediente/exibe.jsp?podeExibir="true"
 			</result>
 			<result name="reservado">
 				/paginas/expediente/cuidado_reserva.jsp?"
@@ -1141,7 +1141,7 @@
 		</action>
 		<action name="transferir_lote_gravar" class="br.gov.jfrj.webwork.action.ExMovimentacaoAction"
 			method="aTransferirLoteGravar">
-			<result>/paginas/expediente/protocolo.jsp</result>
+			<result>/paginas/expediente/protocolo_.jsp</result>
 		</action>
 		<action name="arquivar_corrente_lote" class="br.gov.jfrj.webwork.action.ExMovimentacaoAction"
 			method="aArquivarCorrenteLote">
@@ -1718,6 +1718,10 @@
 			<result name="ajax_retorno">
 				/sigalibs/ajax_retorno.jsp
 			</result>
+		</action>
+		<action name="criarDocTest" class="br.gov.jfrj.webwork.action.ExDocumentoAction"
+			method="acriarDocTest">
+			<result>/paginas/expediente/mensagemAjax.jsp</result>
 		</action>
 	</package>
 

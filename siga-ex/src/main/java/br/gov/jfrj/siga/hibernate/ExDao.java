@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import net.sf.ehcache.Cache;
@@ -54,6 +55,7 @@ import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Order;
@@ -705,7 +707,7 @@ public class ExDao extends CpDao {
 					fullTextSession.index(doc);
 
 				if (index % 100 == 0) {
-					System.gc();
+					//System.gc();
 					// fullTextSession.flush();
 					// fullTextSession.clear();
 				}
@@ -716,7 +718,7 @@ public class ExDao extends CpDao {
 			System.out.print(String.valueOf(index)
 					+ " documentos já indexados. --  -- ");
 		} while (list.size() > 0);
-		System.gc();
+		//System.gc();
 
 		// fullTextSession.close();
 		System.out.println("Duração da indexação de documentos: "
@@ -761,7 +763,7 @@ public class ExDao extends CpDao {
 		tx.commit();
 		fullTextSession.clear();
 		getSessao().clear();
-		System.gc();
+		//System.gc();
 
 		// fullTextSession.close();
 		System.out.println("Duração da indexação de documentos: "
@@ -1543,11 +1545,14 @@ public class ExDao extends CpDao {
 		return ((Long) query.uniqueResult()).intValue();
 	}
 
-	public List<ExMobil> consultarParaTransferirEmLote(DpLotacao lot) {
+	//public Query consultarParaTransferirEmLote(DpLotacao lot) {
+	@SuppressWarnings("unchecked")
+	public Iterator<ExMobil> consultarParaTransferirEmLote(DpLotacao lot) {
 		final Query query = getSessao().getNamedQuery(
 				"consultarParaTransferirEmLote");
 		query.setLong("lotaIni", lot.getIdLotacaoIni());
-		return query.list();
+		//return query;
+		return query.iterate();
 	}
 
 	public List<ExMobil> consultarParaAnotarEmLote(DpLotacao lot) {

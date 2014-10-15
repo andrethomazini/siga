@@ -43,7 +43,7 @@ title:'Movimentações'/}
 						#{else} #{set descricao: m.movRef.tipo.nome /}#{/else}
 					#{/elseif}
 					#{else}
-						#{set descricao: '' /} 
+						#{set descricao: m.descricao /} 
 					#{/else}
 					
 					#{if m.movCanceladora != null || m.tipo.id == 12} 
@@ -64,7 +64,7 @@ title:'Movimentações'/}
 						<span title="${m.hisIdcIni?.pessoaAtual?.lotacao?.descricao}">${m.hisIdcIni?.pessoaAtual?.lotacao?.sigla}</span>
 					</td>
 					<td align="left"><span
-						title="${m.hisIdcIni.dpPessoa.descricao}">${m.hisIdcIni.dpPessoa.nomeAbreviado}</span>
+						title="${m.hisIdcIni?.dpPessoa.descricao}">${m.hisIdcIni?.dpPessoa.nomeAbreviado}</span>
 					</td>
 					<td align="left"><span title="${m.lotacaoTitular?.descricao}">${m.lotacaoTitular?.sigla}</span></td>
 					<td align="left"><span title="${m.pessoaTitular?.descricao}">${m.pessoaTitular?.nomeAbreviado}</span></td>					

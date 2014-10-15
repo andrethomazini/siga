@@ -117,6 +117,7 @@ import br.gov.jfrj.siga.ex.ExTipoMovimentacao;
 import br.gov.jfrj.siga.ex.ExVia;
 import br.gov.jfrj.siga.ex.SigaExProperties;
 import br.gov.jfrj.siga.ex.ext.AbstractConversorHTMLFactory;
+import br.gov.jfrj.siga.ex.service.ExService;
 import br.gov.jfrj.siga.ex.util.DatasPublicacaoDJE;
 import br.gov.jfrj.siga.ex.util.FuncoesEL;
 import br.gov.jfrj.siga.ex.util.GeradorRTF;
@@ -416,7 +417,7 @@ public class ExBL extends CpBL {
 									mov.getDtIniMov(), null, pess);
 				// if (index % 10 == 0){
 				dao().getSessao().clear();
-				System.gc();
+				//System.gc();
 				// }
 			} catch (Throwable e) {
 				e.printStackTrace();
@@ -505,7 +506,7 @@ public class ExBL extends CpBL {
 
 		do {
 			long inicio = System.currentTimeMillis();
-			System.gc();
+			//System.gc();
 			iniciarAlteracao();
 			crit.setFirstResult(index);
 			list = crit.list();
@@ -520,8 +521,9 @@ public class ExBL extends CpBL {
 					System.out.println("Erro ao marcar o doc " + doc);
 					e.printStackTrace();
 				}
-				if (index % 50 == 0)
-					System.gc();
+				if (index % 50 == 0){
+//					System.gc();
+				}
 				System.out.print(doc.getIdDoc() + " ok - ");
 			}
 			ExDao.commitTransacao();
@@ -535,7 +537,7 @@ public class ExBL extends CpBL {
 					+ " numerados de " + totalDocs);
 		} while (list.size() > 0);
 
-		System.gc();
+		//System.gc();
 	}
 
 	public void marcarTudo() throws Exception {
@@ -640,7 +642,7 @@ public class ExBL extends CpBL {
 			}
 			if (efetivar) {
 				ExDao.commitTransacao();
-				System.gc();
+				//System.gc();
 			}
 			dao().getSessao().clear();
 		} while (list.size() > 0);
@@ -650,7 +652,7 @@ public class ExBL extends CpBL {
 		out.println(" - Fim");
 		out.println("-----------------------------------------------");
 
-		System.gc();
+		//System.gc();
 	}
 
 	/**
@@ -871,11 +873,7 @@ public class ExBL extends CpBL {
 						|| t == ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_DIGITAL_DOCUMENTO
 						|| t == ExTipoMovimentacao.TIPO_MOVIMENTACAO_CANCELAMENTO_JUNTADA
 						|| t == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESAPENSACAO)
-					if (!mob.doc().isEletronico()
-							&& (mob.doc().isAssinado())
-							|| (mob.doc().isEletronico() && mob
-									.doc()
-									.isAssinadoEletronicoPorTodosOsSignatarios())
+					if (mob.doc().isAssinado()
 							|| mob.doc().getExTipoDocumento().getIdTpDoc() == 2
 							|| mob.doc().getExTipoDocumento().getIdTpDoc() == 3) {
 
@@ -924,26 +922,32 @@ public class ExBL extends CpBL {
 				if (element.getLotaCadastrante() != null
 						&& !transferenciasSet.isEmpty()
 						&& !contemRetornoTransferencia(element)) {
+					
+					Date dtMarca = element.getDtFimMov();
+					dtMarca.setHours(23);
+					dtMarca.setMinutes(59);
+					dtMarca.setSeconds(59);
+					
 					acrescentarMarcaTransferencia(set, mob, m_aguardando, dt,
-							element.getDtFimMov(), element.getCadastrante(),
+							dtMarca, element.getCadastrante(),
 							element.getLotaCadastrante()); // acrescenta a
 															// marca
 															// "Aguardando Devolução"
 
+					acrescentarMarcaTransferencia(set, mob, m_aDevolver, dt,
+							dtMarca, element.getResp(),
+							element.getLotaResp());// acrescenta a marca
+													// "A Devolver"
+
 					acrescentarMarcaTransferencia(set, mob, m_aguardandoFora,
-							element.getDtFimMov(), null,
+							dtMarca, null,
 							element.getCadastrante(),
 							element.getLotaCadastrante()); // acrescenta a
 															// marca
 															// "Aguardando Devolução (Fora do Prazo)"
-
-					acrescentarMarcaTransferencia(set, mob, m_aDevolver, dt,
-							element.getDtFimMov(), element.getResp(),
-							element.getLotaResp());// acrescenta a marca
-													// "A Devolver"
-
+					
 					acrescentarMarcaTransferencia(set, mob, m_aDevolverFora,
-							element.getDtFimMov(), null, element.getResp(),
+							dtMarca, null, element.getResp(),
 							element.getLotaResp());// acrescenta
 													// a
 													// marca
@@ -1020,9 +1024,11 @@ public class ExBL extends CpBL {
 		
 		while (itr.hasNext()) {
 			ExMovimentacao element = (ExMovimentacao) itr.next();
+			if(ExTipoMovimentacao.hasTransferencia(element.getIdTpMov()) == ExTipoMovimentacao.hasTransferencia(mov.getIdTpMov()))
 			if (mov != null){
 				if (element.getIdMov() != mov.getIdMov()
-						&& element.getIdTpMov() == mov.getIdTpMov()
+						&& ExTipoMovimentacao.hasTransferencia(element.getIdTpMov())
+						&& ExTipoMovimentacao.hasTransferencia(mov.getIdTpMov())
 						&& mov.getLotaCadastrante() == element.getLotaResp()
 						) {
 					contains = !contains;
@@ -1882,7 +1888,7 @@ public class ExBL extends CpBL {
 						&& doc.getExMobilPai().isVolumeEncerrado()) {
 					doc.setExMobilPai(doc.getExMobilPai().doc()
 							.getUltimoVolume());
-					gravar(cadastrante, lotaCadastrante, doc);
+					gravar(cadastrante, lotaCadastrante, doc, null);
 				}
 				juntarAoDocumentoPai(cadastrante, lotaCadastrante, doc, mov.getDtMov(),
 						cadastrante, cadastrante, mov);
@@ -1945,6 +1951,20 @@ public class ExBL extends CpBL {
 			throw new AplicacaoException("Erro ao assinar movimentação.", 0, e);
 		}
 
+	}
+	
+	public String criarDocTeste() throws Exception {
+		//Método utilizado para testar criação de documentos por webService
+		/*ExService client = Service.getExService();
+		String s;
+		
+		s = client.criarDocumento("RJ13989", "RJ13989", "CEF", "Agência Av. Rio Branco, 326", 1L, 1681L, "20.05.00.01", "Teste de Criação de documento por webservice",
+				true, 6L, "texto_memorando=%3Cp+style%3D%22text-indent%3A2cm%3B+text-align%3A+justify%22%3E%0D%0A%09Conte%26uacute%3Bdo%3C%2Fp%3E%0D%0A&tamanhoLetra=Normal&fecho=Atenciosamente", 
+				"JFRJ-MEM-2014/00321", true);
+		
+		return s;*/
+		
+		return null;
 	}
 
 	public String assinarDocumento(final DpPessoa cadastrante,
@@ -2143,7 +2163,7 @@ public class ExBL extends CpBL {
 						&& doc.getExMobilPai().isVolumeEncerrado()) {
 					doc.setExMobilPai(doc.getExMobilPai().doc()
 							.getUltimoVolume());
-					gravar(cadastrante, lotaCadastrante, doc);
+					gravar(cadastrante, lotaCadastrante, doc, null);
 				}
 				juntarAoDocumentoPai(cadastrante, lotaCadastrante, doc, dtMov,
 						cadastrante, cadastrante, mov);
@@ -3001,7 +3021,7 @@ public class ExBL extends CpBL {
 			excluirMovimentacao(mov);
 			if ((!mob.doc().isAssinado())
 					&& (!mob.doc().isAssinadoDigitalmente()))
-				processar(mob.getExDocumento(), true, false);
+				processar(mob.getExDocumento(), true, false, null);
 			concluirAlteracao(mov.getExDocumento());
 
 		} catch (final Exception e) {
@@ -3013,7 +3033,7 @@ public class ExBL extends CpBL {
 
 	@SuppressWarnings("unchecked")
 	public String finalizar(final DpPessoa cadastrante,
-			final DpLotacao lotaCadastrante, ExDocumento doc) throws Exception {
+			final DpLotacao lotaCadastrante, ExDocumento doc, String realPath) throws Exception {
 
 		if (doc.isFinalizado())
 			throw new AplicacaoException("Documento já está finalizado.");
@@ -3038,6 +3058,9 @@ public class ExBL extends CpBL {
 		
 		if(!getComp().podeSerSubscritor(doc))
 			throw new AplicacaoException("O usuário não pode ser subscritor do documento");
+		
+		if(doc.isProcesso() && doc.getMobilGeral().temAnexos())
+			throw new AplicacaoException("Processos não podem possuir anexos antes da finalização. Exclua todos os anexos para poder finalizar. Os anexos poderão ser incluídos no primeiro volume após a finalização.");
 
 		Set<ExVia> setVias = doc.getSetVias();
 
@@ -3086,7 +3109,7 @@ public class ExBL extends CpBL {
 				}
 			}
 
-			processar(doc, false, false);
+			processar(doc, false, false, realPath);
 
 			doc.setNumPaginas(doc.getContarNumeroDePaginas());
 			dao().gravar(doc);
@@ -3357,7 +3380,7 @@ public class ExBL extends CpBL {
 	}
 
 	public ExDocumento gravar(final DpPessoa cadastrante,
-			final DpLotacao lotaCadastrante, ExDocumento doc) throws Exception {
+			final DpLotacao lotaCadastrante, ExDocumento doc, String realPath) throws Exception {
 
 		// Verifica se o documento possui documento pai e se o usuário possui
 		// permissões de criar documento filho
@@ -3416,7 +3439,7 @@ public class ExBL extends CpBL {
 			// a estrutura try catch abaixo foi colocada de modo a impedir que
 			// os erros na formatação impeçam a gravação do documento
 			try {
-				processar(doc, false, false);
+				processar(doc, false, false, realPath);
 			} catch (Throwable t) {
 				System.out.println("gravação doc " + doc.getCodigo() + ", "
 						+ new Date().toString() + " - erro na formatação - "
@@ -3718,7 +3741,7 @@ public class ExBL extends CpBL {
 			mov.setNmFuncaoSubscritor(funcaoCosignatario);
 
 			gravarMovimentacao(mov);
-			processar(doc, true, false);
+			processar(doc, true, false, null);
 			concluirAlteracao(doc);
 		} catch (final Exception e) {
 			cancelarAlteracao();
@@ -3940,7 +3963,7 @@ public class ExBL extends CpBL {
 		novoDoc.setExMobilSet(new TreeSet<ExMobil>());
 		novoDoc.getExMobilSet().add(mob);
 
-		novoDoc = gravar(cadastrante, lotaCadastrante, novoDoc);
+		novoDoc = gravar(cadastrante, lotaCadastrante, novoDoc, null);
 
 		// mob = dao().gravar(mob);
 
@@ -3975,7 +3998,7 @@ public class ExBL extends CpBL {
 		// É necessário gravar novamente pois uma movimentação de inclusão
 		// de cossignatário pode ter sido introduzida, gerando a necessidade
 		// de refazer o HTML e o PDF.
-		novoDoc = gravar(cadastrante, lotaCadastrante, novoDoc);
+		novoDoc = gravar(cadastrante, lotaCadastrante, novoDoc, null);
 
 		return novoDoc;
 	}
@@ -4230,7 +4253,7 @@ public class ExBL extends CpBL {
 			final DpPessoa subscritor, final DpPessoa titular,
 			final ExTipoDespacho tpDespacho, final boolean fInterno,
 			final String descrMov, final String conteudo,
-			String nmFuncaoSubscritor) throws AplicacaoException, Exception {
+			String nmFuncaoSubscritor, boolean forcarTransferencia) throws AplicacaoException, Exception {
 
 
 		boolean fDespacho = tpDespacho != null || descrMov != null
@@ -4242,6 +4265,7 @@ public class ExBL extends CpBL {
 
 		Date dtUltReceb = null;
 
+		//Edson: apagar isto? A verificação já é feita no for abaixo...
 		if (fDespacho && mob.isVolumeApensadoAoProximo())
 			throw new AplicacaoException(
 					"Não é possível fazer despacho em um documento que faça parte de um apenso");
@@ -4255,6 +4279,13 @@ public class ExBL extends CpBL {
 		}
 
 		for (ExMobil m : set) {
+			
+			if (!m.equals(mob)
+					&& fDespacho && fTranferencia) {
+				throw new AplicacaoException(
+						"Não é permitido fazer despacho com transferência em um documento que faça parte de um apenso. Faça primeiro o despacho e depois transfira o documento.");
+			}
+			
 			if (fDespacho && m.isVolumeEncerrado())
 				if (m.isApensadoAVolumeDoMesmoProcesso())
 					continue;
@@ -4274,8 +4305,13 @@ public class ExBL extends CpBL {
 					throw new AplicacaoException(
 							"Não é permitido transferir documento para lotação fechada");
 
-				if (!getComp().podeTransferir(cadastrante, lotaCadastrante, m))
-					throw new AplicacaoException("Transferência não permitida");
+				if (forcarTransferencia) {
+					if (!getComp().podeSerTransferido(m))
+						throw new AplicacaoException("Transferência não pode ser realizada (" + m.getSigla() + " ID_MOBIL: " + m.getId() + ")");
+				} else {
+					if (!getComp().podeTransferir(cadastrante, lotaCadastrante, m)) 
+						throw new AplicacaoException("Transferência não permitida (" + m.getSigla() + " ID_MOBIL: " + m.getId() + ")");
+				}
 				if (!m.getExDocumento().isAssinado()
 						&& !lotaResponsavel.equivale(m.getExDocumento()
 								.getLotaTitular())
@@ -4295,7 +4331,7 @@ public class ExBL extends CpBL {
 				if (m.getExDocumento().isEletronico()
 						&& !m.getExDocumento().jaTransferido()
 						&& !m.getExDocumento()
-								.isAssinadoEletronicoPorTodosOsSignatarios())
+								.isAssinado())
 					throw new AplicacaoException(
 							"Não é permitido fazer transferência em documento que ainda não foi assinado por todos os subscritores.");
 
@@ -4307,7 +4343,7 @@ public class ExBL extends CpBL {
 						throw new AplicacaoException(
 								"Não foram informados dados para o despacho/transferência");
 			}
-
+			
 		}
 
 		Date dt = dtMovIni != null ? dtMovIni : dao().dt();
@@ -4344,14 +4380,6 @@ public class ExBL extends CpBL {
 						idTpMov = ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA;
 				}
 
-				// se for apensado e for despacho com transferência, interrompe
-				// toda a transferência
-				if (!m.equals(mob)
-						&& (idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA_EXTERNA
-								|| idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_INTERNO_TRANSFERENCIA || idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA)) {
-					throw new AplicacaoException(
-							"Não é permitido fazer despacho com transferência em um documento que faça parte de um apenso. Faça primeiro o despacho e depois transfira o documento.");
-				}
 				// se não for apensado, pode.
 				// se for apenas tranferência, pode.
 				if (m.equals(mob)
@@ -4650,7 +4678,7 @@ public class ExBL extends CpBL {
 	}
 
 	public void processar(final ExDocumento doc, final boolean gravar,
-			final boolean transacao) throws Exception {
+			final boolean transacao, String realPath) throws Exception {
 		try {
 			if (doc != null
 					&& (doc.isAssinado() || doc.isAssinadoDigitalmente()))
@@ -4707,7 +4735,7 @@ public class ExBL extends CpBL {
 						getConf(), doc, strHtml);
 
 				try {
-					pdf = Documento.generatePdf(strHtml, conversor);
+					pdf = Documento.generatePdf(strHtml, conversor, realPath);
 				} catch (Exception e) {
 					throw new AplicacaoException(
 							"Erro na geração do PDF. Por favor, verifique se existem recursos de formatação não suportados. Para eliminar toda a formatação do texto clique em voltar e depois, no editor, clique no botão de 'Selecionar Tudo' e depois no botão de 'Remover Formataçao'.",

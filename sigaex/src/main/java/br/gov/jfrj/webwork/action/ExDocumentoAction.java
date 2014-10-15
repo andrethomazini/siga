@@ -340,15 +340,9 @@ public class ExDocumentoAction extends ExActionSupport {
 		return FuncoesEL.listaDocsAPublicarBoletim(getLotaTitular().getOrgaoUsuario());
 	}
 
-	public List<ExDocumento> getListaDocsAPublicarBoletimPorDocumento() {
-		if (getDoc().getIdDoc() != null) {
-			final List<ExDocumento> l = dao().consultarPorBoletimParaPublicar(
-					getDoc());
-			return l;
-		}
-
-		return null;
-	}
+	 public List<ExDocumento> getListaDocsAPublicarBoletimPorDocumento() {
+         return FuncoesEL.listaDocsAPublicarBoletimPorDocumento(getDoc());
+	 }
 
 	public HierarquizadorBoletimInterno getHierarquizadorBIE() {
 		return new HierarquizadorBoletimInterno(getLotaTitular()
@@ -936,7 +930,7 @@ public class ExDocumentoAction extends ExActionSupport {
 		}
 	}
 
-	public String aExibir() throws Exception {
+	public String aExibirAntigo() throws Exception {
 		buscarDocumento(false);
 		
 		assertAcesso();
@@ -949,7 +943,7 @@ public class ExDocumentoAction extends ExActionSupport {
 							new Date());
 
 		ExDocumentoVO docVO = new ExDocumentoVO(doc, mob, getTitular(),
-				getLotaTitular(), true);
+				getLotaTitular(), true,true);
 		super.getRequest().setAttribute("docVO", docVO);
 
 		// logStatistics();
@@ -966,8 +960,8 @@ public class ExDocumentoAction extends ExActionSupport {
 	}
 	
 	
-	public String aExibirNovo() throws Exception {
-		buscarDocumento(true);
+	public String aExibir() throws Exception {
+		buscarDocumento(false);
 
 		assertAcesso();
 
@@ -988,10 +982,10 @@ public class ExDocumentoAction extends ExActionSupport {
 		}
 
 		ExDocumentoVO docVO = new ExDocumentoVO(doc, mob, getTitular(),
-				getLotaTitular(), true);
+				getLotaTitular(), true,false);
 		
 		
-		docVO.novoExibe();
+		docVO.exibe();
 		
 		super.getRequest().setAttribute("docVO", docVO);
 
@@ -1007,7 +1001,7 @@ public class ExDocumentoAction extends ExActionSupport {
 			mob = (ExMobil) dao().consultarPorSigla(filter);
 
 			Ex.getInstance().getBL()
-					.processar(mob.getExDocumento(), true, false);
+					.processar(mob.getExDocumento(), true, false, null);
 		}
 		return Action.SUCCESS;
 	}
@@ -1153,7 +1147,7 @@ public class ExDocumentoAction extends ExActionSupport {
 		try {
 
 			setMsg(Ex.getInstance().getBL()
-					.finalizar(getCadastrante(), getLotaTitular(), doc));
+					.finalizar(getCadastrante(), getLotaTitular(), doc, null));
 
 			if (doc.getForm() != null) {
 				String funcao = doc.getForm().get("acaoFinalizar");
@@ -1272,7 +1266,7 @@ public class ExDocumentoAction extends ExActionSupport {
 			}
 
 			Ex.getInstance().getBL()
-					.gravar(getCadastrante(), getLotaTitular(), doc);
+					.gravar(getCadastrante(), getLotaTitular(), doc, null);
 
 			lerEntrevista(doc);
 
@@ -1373,7 +1367,7 @@ public class ExDocumentoAction extends ExActionSupport {
 					.consultar(paramLong("idMod"), ExModelo.class, false));
 		}
 
-		Ex.getInstance().getBL().processar(doc, false, false);
+		Ex.getInstance().getBL().processar(doc, false, false, null);
 
 		setPdfStreamResult(new ByteArrayInputStream(doc.getConteudoBlobPdf()));
 
@@ -1607,6 +1601,18 @@ public class ExDocumentoAction extends ExActionSupport {
 		} catch (final Exception e) {
 			throw e;
 		}
+		return Action.SUCCESS;
+	}
+	
+	public String acriarDocTest() throws Exception {
+		try {
+			setMensagem(Ex.getInstance()
+					.getBL()
+					.criarDocTeste());
+		} catch (final Exception e) {
+			throw e;
+		}
+		
 		return Action.SUCCESS;
 	}
 
