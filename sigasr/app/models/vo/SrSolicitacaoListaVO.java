@@ -124,7 +124,7 @@ public class SrSolicitacaoListaVO {
 		colunasDetalhamento.add(new ColunasVO("Teor", "teorFormatado"));
 		colunasDetalhamento.add(new ColunasVO("Solicitante", "solicitanteFormatado"));
 		colunasDetalhamento.add(new ColunasVO("Prioridade", "prioridadeFormatada"));
-		colunasDetalhamento.add(new ColunasVO("Situação", "marcadoresEmHtmlDetalhes"));
+		colunasDetalhamento.add(new ColunasVO("Situação", "marcadoresEmHtmlDetalhes", "", true, true, true));
 		colunasDetalhamento.add(new ColunasVO("Última Movimentação", "ultimaMovimentacaoformatada"));
 		
 		return colunasDetalhamento;
