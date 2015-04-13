@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import br.gov.jfrj.siga.cp.CpConfiguracao;
 import br.gov.jfrj.siga.cp.CpPerfil;
+import br.gov.jfrj.siga.cp.CpTipoConfiguracao;
 import br.gov.jfrj.siga.cp.bl.CpConfiguracaoBL;
 
 public class SrConfiguracaoBL extends CpConfiguracaoBL {
@@ -130,9 +131,16 @@ public class SrConfiguracaoBL extends CpConfiguracaoBL {
 		for (int i = 0; i < atributoDesconsideradoFiltro.length; i++) {
 			atributosDesconsiderados.add(atributoDesconsideradoFiltro[i]);
 		}
+		
+		SortedSet<CpPerfil> perfis = null;
+		if (confFiltro.isBuscarPorPerfis()) {
+			perfis = consultarPerfisPorPessoaELotacao(
+					confFiltro.getDpPessoa(),
+					confFiltro.getLotacao(), null);
+		}
 
 		List<SrConfiguracao> listaFinal = new ArrayList<SrConfiguracao>();
-		
+
 		if (confFiltro.getCpTipoConfiguracao() != null) {
 			TreeSet<CpConfiguracao> lista = getListaPorTipo(confFiltro
 					.getCpTipoConfiguracao().getIdTpConfiguracao());
@@ -141,7 +149,7 @@ public class SrConfiguracaoBL extends CpConfiguracaoBL {
 				for (CpConfiguracao cpConfiguracao : lista) {
 					if (cpConfiguracao.getHisDtFim() == null
 							&& atendeExigencias(confFiltro, atributosDesconsiderados,
-									(SrConfiguracao) cpConfiguracao, null)) {
+									(SrConfiguracao) cpConfiguracao, perfis)) {
 						listaFinal.add((SrConfiguracao) cpConfiguracao);
 					}
 				}
@@ -162,8 +170,11 @@ public class SrConfiguracaoBL extends CpConfiguracaoBL {
 			
 			SrConfiguracao srConf = (SrConfiguracao) conf;
 			
-			if (srConf.atendente != null)
+			if (srConf.atendente != null){
 				srConf.atendente.getLotacaoAtual();
+				if (srConf.atendente.getOrgaoUsuario() != null)
+					srConf.atendente.getOrgaoUsuario().getSiglaOrgaoUsu();
+			}
 			
 			if (srConf.itemConfiguracaoSet != null)
 				for (SrItemConfiguracao i : srConf.itemConfiguracaoSet) {
@@ -209,13 +220,6 @@ public class SrConfiguracaoBL extends CpConfiguracaoBL {
 			
 			if (srConf.acordo != null)
 				srConf.acordo.getAcordoAtual();
-			
-			if (srConf.getListaConfiguracaoSet() != null) {
-				for (SrLista listaConf : srConf.getListaConfiguracaoSet()){
-					listaConf.getListaAtual();
-					listaConf.getId();
-				}
-			}
 
 			if (srConf.tipoPermissaoSet != null) {
 				for (SrTipoPermissaoLista perm : srConf.tipoPermissaoSet){

@@ -27,7 +27,7 @@ import br.gov.jfrj.siga.model.Selecionavel;
 
 @Entity
 @Table(name = "SR_ACORDO", schema = "SIGASR")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 public class SrAcordo extends HistoricoSuporte implements Selecionavel {
 
 	/**
@@ -149,7 +149,7 @@ public class SrAcordo extends HistoricoSuporte implements Selecionavel {
 		return getAtributo(att);
 	}
 
-	public Integer getAtributoEmSegundos(String codigo) {
+	public Long getAtributoEmSegundos(String codigo) {
 		SrAtributoAcordo pa = getAtributo(codigo);
 		if (pa == null)
 			return null;

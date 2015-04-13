@@ -28,7 +28,6 @@ package br.gov.jfrj.webwork.action;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -37,7 +36,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,10 +55,8 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.apache.xerces.impl.dv.util.Base64;
-import org.hibernate.ScrollableResults;
-import org.hibernate.Session;
+import org.jboss.logging.Logger;
 
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Correio;
@@ -89,7 +85,6 @@ import br.gov.jfrj.siga.ex.bl.Ex;
 import br.gov.jfrj.siga.ex.util.DatasPublicacaoDJE;
 import br.gov.jfrj.siga.ex.util.PublicacaoDJEBL;
 import br.gov.jfrj.siga.ex.vo.ExMobilVO;
-import br.gov.jfrj.siga.ex.vo.ExMovimentacaoVO;
 import br.gov.jfrj.siga.libs.webwork.CpOrgaoSelecao;
 import br.gov.jfrj.siga.libs.webwork.DpLotacaoSelecao;
 import br.gov.jfrj.siga.libs.webwork.DpPessoaSelecao;
@@ -267,6 +262,8 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	private String tipoAssinaturaMov;
 	
 	private boolean autenticando;
+	
+	private String proximaDataDisponivelStr;
 
 	public String getAtributoAssinavelDataHora() {
 		return atributoAssinavelDataHora;
@@ -389,6 +386,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String abCorrigirDataFimMov() throws Exception {
+		assertAcesso("");
 		return Action.SUCCESS;
 	}
 
@@ -403,7 +401,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 
 	private void buscarDocumento(boolean fVerificarAcesso,
 			boolean fPodeNaoExistir) throws Exception {
-
+		assertAcesso("");
 		if (id != null) {
 			mov = dao().consultar(id, ExMovimentacao.class, false);
 			mob = getMov(mov);
@@ -455,6 +453,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String abCorrigirDataFimMovGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		// ExDocumento doque = new ExDocumento();
@@ -506,6 +505,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aPreverData() throws Exception {
+		assertAcesso("");
 		try {
 			DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 			Date provDtDispon = format.parse(param("data"));
@@ -525,6 +525,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAtualizarPublicacao() throws Exception {
+		assertAcesso("");
 		String sData = param("data");
 		Date data = null;
 		if (sData != null) {
@@ -547,6 +548,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aRegistrarDisponibilizacaoPublicacaoGravar() throws Exception {
+		assertAcesso("");
 		String sNomeDoc = param("documento");
 		String sPagina = param("pagina");
 
@@ -563,6 +565,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aPedirPublicacao() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (doc.getExNivelAcesso().getGrauNivelAcesso() != ExNivelAcesso.NIVEL_ACESSO_PUBLICO)
@@ -574,6 +577,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 				.podePedirPublicacao(getTitular(), getLotaTitular(), mob))
 			throw new AplicacaoException("Publicação não permitida");
 
+		setProximaDataDisponivelStr(DatasPublicacaoDJE.consultarProximaDataDisponivelString());
 		setTipoMateria(PublicacaoDJEBL.obterSugestaoTipoMateria(doc));
 		setCadernoDJEObrigatorio(PublicacaoDJEBL
 				.obterObrigatoriedadeTipoCaderno(doc));
@@ -583,6 +587,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aPedirPublicacaoGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -613,6 +618,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAgendarPublicacao() throws Exception {
+		assertAcesso("");
 
 		buscarDocumento(true);
 
@@ -626,6 +632,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 			throw new AplicacaoException(
 					"Não foi possível o agendamento de publicação no DJE.");
 
+		setProximaDataDisponivelStr(DatasPublicacaoDJE.consultarProximaDataDisponivelString());
 		setTipoMateria(PublicacaoDJEBL.obterSugestaoTipoMateria(doc));
 		setCadernoDJEObrigatorio(PublicacaoDJEBL
 				.obterObrigatoriedadeTipoCaderno(doc));
@@ -653,6 +660,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAgendarPublicacaoGravar() throws Exception {
+		assertAcesso("");
 		Long idPubl = null;
 		buscarDocumento(true);
 		lerForm(mov);
@@ -713,6 +721,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aBoletimPublicarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -731,6 +740,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aCancelarPedidoPublicacaoBoletim() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		ExMovimentacao movPedidoBI = mob
@@ -785,7 +795,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAtenderPedidoPublicacao() throws Exception {
-
+		assertAcesso("");
 		if (!Ex.getInstance()
 				.getConf()
 				.podePorConfiguracao(
@@ -800,7 +810,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAtenderPedidoPublicacaoGravar() throws Exception {
-
+		assertAcesso("");
 		final Pattern p = Pattern.compile("chk_([0-9]+)");
 
 		StringBuffer msgDocumentosErro = new StringBuffer();
@@ -865,6 +875,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAtenderPedidoPublicacaoCancelar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance()
@@ -926,6 +937,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aDownloadZipPublicacao() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		for (ExMovimentacao move : doc.getMobilGeral().getExMovimentacaoSet()) {
@@ -938,6 +950,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAnexar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!(mob.isGeral() && mob.doc().isFinalizado()))
@@ -956,6 +969,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAnexarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1034,7 +1048,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAssinarAnexosGeral() throws Exception {
-
+		assertAcesso("");
 		this.assinandoAnexosGeral = true;
 
 		return aAnexar();
@@ -1042,6 +1056,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aMostrarAnexosAssinados() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		ExMobilVO mobilVO = new ExMobilVO(mob, getTitular(), getLotaTitular(),
@@ -1051,6 +1066,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarCorrenteGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1077,6 +1093,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarIntermediario() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -1092,6 +1109,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarIntermediarioGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1113,6 +1131,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarPermanenteGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1134,6 +1153,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReabrirGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1153,6 +1173,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aDesarquivarIntermediarioGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1177,6 +1198,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aDesobrestarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1196,6 +1218,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aSobrestarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1221,6 +1244,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAssinar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		boolean fPreviamenteAssinado = doc.isAssinado();
@@ -1236,11 +1260,13 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 	
 	public String aAutenticarDocumento() throws Exception {
+		assertAcesso("");
 		setAutenticando(true);
 		return aAssinar();
 	}
 
 	public String aConferirCopia() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (getId() == null)
@@ -1252,6 +1278,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aSimularAssinatura() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		Ex.getInstance()
 				.getBL()
@@ -1261,6 +1288,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aSimularAssinaturaMov() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		Ex.getInstance()
 				.getBL()
@@ -1274,6 +1302,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aSimularAnexacao() throws Exception {
+		assertAcesso("");
 		Document document = new Document();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PdfWriter.getInstance(document, baos);
@@ -1341,6 +1370,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAssinarGravar() throws Exception {
+		assertAcesso("");
 		boolean fApplet = getRequest().getParameter("QTYDATA") != null;
 		String b64Applet = null;
 		if (fApplet) {
@@ -1396,6 +1426,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 	
 	public String aAssinarSenhaGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 		
@@ -1415,6 +1446,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 	
 	public String aAssinarMovSenhaGravar() throws Exception {
+		assertAcesso("");
 		long tpMovAssinatura = ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_MOVIMENTACAO_COM_SENHA;
 		
 		buscarDocumento(true);
@@ -1528,7 +1560,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 		// SignerInformation sigInfo = pacoteAssinatura
 		// .getSignerInformation(i);
 		//
-		// // Busca o certificado do assinante atravÃ©s do serialNumber e
+		// // Busca o certificado do assinante através do serialNumber e
 		// // issuer.
 		// BigInteger serialNumber = sigInfo.getSerialNumber();
 		// Principal issuer = sigInfo.getIssuer();
@@ -1537,7 +1569,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 		// signerCert = (X509CertificateImpl) pacoteAssinatura
 		// .getCertificates().getCertificate(issuer, serialNumber);
 		//
-		// // Se o certificado nÃ£o existir, lanÃ§a erro.
+		// // Se o certificado não existir, lança erro.
 		// if (signerCert == null) {
 		// throw new Exception(
 		// "O certificado do assinante não foi encontrado");
@@ -1576,6 +1608,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	 */
 
 	public String aAssinarMov() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		mov = dao().consultar(getId(), ExMovimentacao.class, false);
@@ -1584,6 +1617,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAssinarMovGravar() throws Exception {
+		assertAcesso("");
 		boolean fApplet = getRequest().getParameter("QTYDATA") != null;
 		String b64Applet = null;
 		if (fApplet) {
@@ -1636,12 +1670,13 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aFecharPopup() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		return Action.SUCCESS;
 	}
 
 	public String aRedefinirNivelAcesso() throws Exception {
-
+		assertAcesso("");
 		buscarDocumento(true);
 
 		setNivelAcesso(doc.getExNivelAcesso().getIdNivelAcesso());
@@ -1650,6 +1685,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aRedefinirNivelAcessoGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1682,6 +1718,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAssinarVerificar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		try {
@@ -1700,6 +1737,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAssinarMovVerificar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		final ExMovimentacao mov = dao().consultar(getId(),
@@ -1722,6 +1760,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aCancelarJuntada() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -1738,6 +1777,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aCancelarJuntadaGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1760,6 +1800,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aCancelarUltimaMovimentacao() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		final ExMovimentacao exUltMovNaoCanc = mob
@@ -1793,6 +1834,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aCancelar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (mov.getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_ANEXACAO) {
@@ -1845,6 +1887,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aCancelarMovimentacaoGravar() throws Exception {
+		assertAcesso("");
 		ExMovimentacao movForm = new ExMovimentacao();
 		buscarDocumento(true);
 		lerForm(movForm);
@@ -1899,6 +1942,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aExcluir() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -1914,6 +1958,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aExibir() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (getId() == null)
@@ -1927,11 +1972,13 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAutenticarMovimentacao() throws Exception {
+		assertAcesso("");
 		setAutenticando(true);
 		return aExibir();
 	}
 
 	public String aGerarProtocolo() throws Exception {
+		assertAcesso("");
 		// buscarDocumento(true);
 		lerForm(mov);
 
@@ -2010,6 +2057,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aGerarProtocoloUnitario() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		mov = dao().consultar(getId(), ExMovimentacao.class, false);
@@ -2022,6 +2070,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aGerarProtocoloArq() throws Exception {
+		assertAcesso("");
 		// buscarDocumento(true);
 		mov = null;
 
@@ -2114,6 +2163,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	// }
 
 	public String aJuntar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2124,6 +2174,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aJuntarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2165,6 +2216,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aApensar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2175,6 +2227,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aApensarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2206,6 +2259,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aDesapensar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2221,6 +2275,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aDesapensarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2242,6 +2297,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aRegistrarAssinatura() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (doc.getSubscritor() != null) {
@@ -2262,6 +2318,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aRegistrarAssinaturaGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2288,6 +2345,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aIncluirCosignatario() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2298,6 +2356,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aIncluirCosignatarioGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2326,6 +2385,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReceber() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2337,6 +2397,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReceberGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2408,6 +2469,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	// Nato: Temos que substituir por uma tela que mostre os itens marcados como
 	// "em transito"
 	public String aReceberLote() throws Exception {
+		assertAcesso("");
 		List<ExMobil> provItens = dao().consultarParaReceberEmLote(
 				getLotaTitular());
 
@@ -2426,6 +2488,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReceberLoteGravar() throws Exception {
+		assertAcesso("");
 		final ExMovimentacao mov = new ExMovimentacao();
 		lerForm(mov);
 
@@ -2464,6 +2527,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarCorrenteLote() throws Exception {
+		assertAcesso("");
 		List<ExMobil> provItens = dao().consultarParaArquivarCorrenteEmLote(
 				getLotaTitular());
 
@@ -2482,6 +2546,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarCorrenteLoteGravar() throws Exception {
+		assertAcesso("");
 		final ExMovimentacao mov = new ExMovimentacao();
 		lerForm(mov);
 
@@ -2513,7 +2578,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarIntermediarioLote() throws Exception {
-
+		assertAcesso("");
 		int offset = 0;
 		if (getP().getOffset() != null) {
 			offset = getP().getOffset();
@@ -2555,7 +2620,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarIntermediarioLoteGravar() throws Exception {
-
+		assertAcesso("");
 		final ExMovimentacao mov = new ExMovimentacao();
 		lerForm(mov);
 
@@ -2587,6 +2652,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarPermanenteLote() throws Exception {
+		assertAcesso("");
 		int offset = 0;
 		if (getP().getOffset() != null) {
 			offset = getP().getOffset();
@@ -2627,6 +2693,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aArquivarPermanenteLoteGravar() throws Exception {
+		assertAcesso("");
 		final ExMovimentacao mov = new ExMovimentacao();
 		lerForm(mov);
 
@@ -2665,6 +2732,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAssinarLote() throws Exception {
+		assertAcesso("");
 		List<ExDocumento> itensComoSubscritor = dao()
 				.listarDocPendenteAssinatura(getTitular());
 		List<ExDocumento> itensFinalizados = new ArrayList<ExDocumento>();
@@ -2689,6 +2757,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 	
 	public String aAssinarDespachoLote() throws Exception {		
+		assertAcesso("");
 		List<ExMovimentacao> itensComoSubscritor = dao().
 					listarDespachoPendenteAssinatura(getTitular());
 
@@ -2708,6 +2777,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReverterIndicacaoPermanente() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance()
@@ -2721,6 +2791,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReverterIndicacaoPermanenteGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2754,6 +2825,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aRetirarDeEditalEliminacao() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance()
@@ -2767,6 +2839,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aRetirarDeEditalEliminacaoGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2793,6 +2866,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aIndicarPermanente() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2804,6 +2878,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aIndicarPermanenteGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2834,6 +2909,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAvaliar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2844,6 +2920,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAvaliarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2873,6 +2950,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReclassificar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2883,6 +2961,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReclassificarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2912,6 +2991,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReferenciar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -2922,6 +3002,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aPrever() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (getId() != null) {
@@ -2939,6 +3020,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aReferenciarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -2971,6 +3053,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aTransferir() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -3002,6 +3085,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aTransferirGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -3054,6 +3138,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aEncerrarVolumeGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 		lerForm(mov);
 
@@ -3081,6 +3166,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAnotar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -3091,6 +3177,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAnotarGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		lerForm(mov);
@@ -3121,6 +3208,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAnotarLote() throws Exception {
+		assertAcesso("");
 		List<ExMobil> provItens = dao().consultarParaAnotarEmLote(
 				getLotaTitular());
 
@@ -3139,7 +3227,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aAnotarLoteGravar() throws Exception {
-
+		assertAcesso("");
 		final ExMovimentacao mov = new ExMovimentacao();
 		lerForm(mov);
 
@@ -3173,6 +3261,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aVincularPapel() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (!Ex.getInstance().getComp()
@@ -3184,6 +3273,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aVincularPapelGravar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		lerForm(mov);
@@ -3225,6 +3315,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aTransferirLote() throws Exception {
+		assertAcesso("");
 		Iterator<ExMobil> provItens = dao().consultarParaTransferirEmLote(
 				getLotaTitular());
 		setItens(new ArrayList<ExMobil>());
@@ -3238,6 +3329,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aTransferirLote_new() throws Exception {
+		assertAcesso("");
 		final ExDocumentoDaoFiltro flt = new ExDocumentoDaoFiltro();
 		DpLotacao lotaFiltro = new DpLotacao();
 		lotaFiltro.setIdLotacaoIni(getLotaTitular().getIdLotacaoIni());
@@ -3271,7 +3363,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aTransferirLoteGravar() throws Exception {
-
+		assertAcesso("");
 		lerForm(mov);
 
 		final Pattern p = Pattern.compile("chk_([0-9]+)");
@@ -3407,6 +3499,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aViaProtocolo() throws Exception {
+		assertAcesso("");
 		List<ExMobil> provItens = dao().consultarParaViaDeProtocolo(
 				getLotaTitular());
 
@@ -3670,6 +3763,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	private void lerForm(final ExMovimentacao mov) throws Exception {
+		assertAcesso("");
 		mov.setExMobil(mob);
 
 		mov.setDescrMov(getDescrMov());
@@ -4184,6 +4278,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aBoletimAgendar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		if (doc.getExNivelAcesso().getGrauNivelAcesso() != ExNivelAcesso.NIVEL_ACESSO_PUBLICO)
@@ -4211,6 +4306,7 @@ public class ExMovimentacaoAction extends ExActionSupport {
 	}
 
 	public String aBoletimPublicar() throws Exception {
+		assertAcesso("");
 		buscarDocumento(true);
 
 		final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -4439,5 +4535,13 @@ public class ExMovimentacaoAction extends ExActionSupport {
 
 	public void setAutenticando(boolean autenticando) {
 		this.autenticando = autenticando;
+	}
+
+	public String getProximaDataDisponivelStr() {
+		return proximaDataDisponivelStr;
+	}
+
+	public void setProximaDataDisponivelStr(String proximaDataDisponivelStr) {
+		this.proximaDataDisponivelStr = proximaDataDisponivelStr;
 	}
 }

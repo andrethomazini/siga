@@ -19,6 +19,7 @@
 package br.gov.jfrj.siga.libs.webwork;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +38,7 @@ import com.opensymphony.webwork.interceptor.PrincipalAware;
 import com.opensymphony.webwork.interceptor.PrincipalProxy;
 
 public class SigaActionSupport extends SigaAnonimoActionSupport implements
-		PrincipalAware, ConheceUsuario {
+PrincipalAware, ConheceUsuario {
 	/**
 	 * 
 	 */
@@ -52,6 +53,7 @@ public class SigaActionSupport extends SigaAnonimoActionSupport implements
 	private DpLotacao lotaTitular;
 
 	private CpIdentidade identidadeCadastrante;
+	private String idp;
 
 	public static Log getLog() {
 		return SigaActionSupport.log;
@@ -156,8 +158,7 @@ public class SigaActionSupport extends SigaAnonimoActionSupport implements
 		DpSubstituicao dpSubstituicao = new DpSubstituicao();
 		dpSubstituicao.setSubstituto(getCadastrante());
 		dpSubstituicao.setLotaSubstituto(getCadastrante().getLotacao());
-		List<DpSubstituicao> itens = dao().consultarSubstituicoesPermitidas(
-				dpSubstituicao);
+		List<DpSubstituicao> itens = dao().consultarSubstituicoesPermitidas(dpSubstituicao);
 		return itens;
 	}
 
@@ -186,20 +187,18 @@ public class SigaActionSupport extends SigaAnonimoActionSupport implements
 	}
 
 	public void assertAcesso(String pathServico) throws AplicacaoException,
-			Exception {
+	Exception {
 		String servico = "SIGA:Sistema Integrado de Gestão Administrativa;"
 				+ pathServico;
 		if (!Cp.getInstance()
 				.getConf()
 				.podeUtilizarServicoPorConfiguracao(getTitular(),
-						getLotaTitular(), servico)){
-			
+						getLotaTitular(), servico)) {
 			String siglaUsuario = getTitular()==null?"Indefinido":getTitular().getSigla();
 			String siglaLotacao = getLotaTitular()==null?"Indefinida":getLotaTitular().getSiglaCompleta();
-			
 			throw new AplicacaoException("Acesso negado. Serviço: '" + servico
-					+ "' usuário: " + siglaUsuario + " lotação: "
-					+ siglaLotacao);
+					+ "' usuário: " + getTitular().getSigla() + " lotação: "
+					+ getLotaTitular().getSiglaCompleta());
 		}
 	}
 
@@ -210,5 +209,14 @@ public class SigaActionSupport extends SigaAnonimoActionSupport implements
 	public void setIdentidadeCadastrante(CpIdentidade identidadeCadastrante) {
 		this.identidadeCadastrante = identidadeCadastrante;
 	}
+	
+	public String getIdp() {
+		return idp;
+	}
+
+	public void setIdp(String idp) {
+		this.idp = idp;
+	}
+
 
 }

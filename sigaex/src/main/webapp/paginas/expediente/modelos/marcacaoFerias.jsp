@@ -11,7 +11,7 @@
 			opcoes="Selecione;Marcação;Alteração;Cancelamento" reler="sim"></mod:selecao>
 		<c:choose>
 			<c:when test="${opcao eq 'Marcação'}">
-				<mod:grupo titulo="Fruição/Marcação de férias">
+				<mod:grupo titulo="Fruição/Marcacao de férias">
 					<mod:selecao titulo="Número de marcações" var="marcacoes"
 						opcoes="1;2;3" reler="ajax" idAjax="marcacoesAjax" />
 					<mod:grupo depende="marcacoesAjax">

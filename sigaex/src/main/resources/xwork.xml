@@ -11,13 +11,14 @@
 		<interceptors>
 			<interceptor name="siga-exception"
 				class="br.gov.jfrj.siga.libs.webwork.SigaExceptionHandler" />
+				<!-- 
 			<interceptor name="siga-multiple-request-deny"
 				class="br.gov.jfrj.siga.libs.webwork.SigaMultipleRequestDenyHandler" />
+				 -->
 
 			<interceptor-stack name="defaultStackWithExceptionMapping">
 				<interceptor-ref name="fileUpload"/>
-				<interceptor-ref name="siga-exception" />
-				<interceptor-ref name="siga-multiple-request-deny" />
+				<interceptor-ref name="siga-exception" />		
 				<interceptor-ref name="servlet-config" />
 				<interceptor-ref name="prepare" />
 				<interceptor-ref name="static-params" />
@@ -1721,7 +1722,10 @@
 		<action name="gravar" class="br.gov.jfrj.webwork.action.ExTipoDespachoAction"
 			method="aGravar">
 			<result type="redirect-action">listar</result>
-
+		</action>
+		<action name="excluir" class="br.gov.jfrj.webwork.action.ExTipoDespachoAction"
+			method="aExcluir">
+			<result type="redirect-action">listar</result>
 		</action>
 
 	</package>

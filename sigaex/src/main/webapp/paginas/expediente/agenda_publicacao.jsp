@@ -72,15 +72,12 @@
 	
 </script>
 
-<!-- A linha abaixo é temporária, pois está presente num dos cabeçalhos  -->
-<div id="carregando" style="position:absolute;top:0px;right:0px;background-color:red;font-weight:bold;padding:4px;color:white;display:none">Carregando...</div>
-
 	<div class="gt-bd clearfix">
 		<div class="gt-content clearfix">		
 			<h2>Agendamento de Publicação - ${mob.siglaEDescricaoCompleta}</h2>
 			<div class="gt-content-box gt-for-table">			
 		<form name="frm" action="agendar_publicacao_gravar.action"
-			namespace="/expediente/mov" cssClass="form" method="GET">
+namespace="/expediente/mov" cssClass="form" method="GET">
 			<ww:token/>
 			<input type="hidden" name="postback" value="1" />
 			<ww:hidden name="sigla" value="%{sigla}"/>
@@ -120,6 +117,10 @@
 						<ww:radio list="#{'J':'Judicial', 'A':'Administrativa'}" name="tipoMateria" id="tm" label="Tipo de Matéria"  value="${tipoMateria}" disabled="${disabledTpMat}" />
 					</c:otherwise>
 				</c:choose>
+				<tr>
+					<td>Próxima data para disponibilização:</td>
+					<td>${proximaDataDisponivelStr}</td>
+				</tr>
 				<ww:textfield name="dtDispon" id="dt_dispon"
 					onblur="javascript:verifica_data(this,true);prever_data();"
 					label="Data para disponibilização" />

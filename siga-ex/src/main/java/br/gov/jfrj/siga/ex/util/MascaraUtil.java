@@ -8,10 +8,10 @@ import java.util.regex.Pattern;
 
 import org.mvel2.MVEL;
 
-import com.uwyn.rife.continuations.util.StringUtils;
-
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.ex.SigaExProperties;
+
+import com.uwyn.rife.continuations.util.StringUtils;
 
 public class MascaraUtil {
 

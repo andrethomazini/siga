@@ -1,5 +1,5 @@
 <div class="gt-content-box gt-for-table" style="margin-top: 15px;">
-	<form id="formSelecionarLista" action="@{Application.incluirEmListaGravar(solicitacao?.idSolicitacao, lista?.idLista)}" onsubmit="javascript: return block();">
+	<form id="formSelecionarLista" action="@{Application.incluirEmListaGravar(solicitacao?.idSolicitacao, lista?.idLista)}" onsubmit="javascript: return block();" enctype="multipart/form-data">
 		
 		<input type="hidden" name="prioridade" />
 		<input type="hidden" name="naoReposicionarAutomatico"/>

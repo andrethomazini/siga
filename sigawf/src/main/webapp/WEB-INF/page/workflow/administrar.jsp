@@ -3,7 +3,6 @@
 <siga:pagina popup="false" titulo="Administração do SIGA WF">
 	<div class="gt-bd clearfix">
 		<div class="gt-content clearfix">
-
 			<h1>Administração do SIGA WF</h1>
 
 			<h2>Encerrar Processo</h2>
@@ -30,7 +29,7 @@
 					</tr>
 
 				</ww:form>
-
-			</div>
+			
 		</div>
+	</div>
 </siga:pagina>

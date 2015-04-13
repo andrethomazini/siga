@@ -440,7 +440,6 @@ public class WfBL extends CpBL {
 		}
 		
 		encerrarProcessInstance(ti.getProcessInstance().getId(), dtFim);
-		
 	}
 	
 	public String gravarProcessDefinition(String xml) {

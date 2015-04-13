@@ -44,7 +44,7 @@ public class SrConfiguracaoVO {
 	public SelecionavelVO lotacaoParaInclusaoAutomatica;
 	public SelecionavelVO cargo;
 	public SelecionavelVO funcaoConfianca;
-	public SelecionavelVO grupo;
+	public SelecionavelVO cpGrupo;
 	public SelecionavelVO solicitante;
 	public SrPrioridade prioridadeNaLista;
 	public String descPrioridadeNaLista;
@@ -103,7 +103,7 @@ public class SrConfiguracaoVO {
 		lotacaoParaInclusaoAutomatica = lotacao;
 		cargo = SelecionavelVO.createFrom(configuracao.getCargo(), configuracao.getTipoSolicitante());
 		funcaoConfianca = SelecionavelVO.createFrom(configuracao.getFuncaoConfianca(), configuracao.getTipoSolicitante());
-		grupo = SelecionavelVO.createFrom(configuracao.getCpGrupo(), configuracao.getTipoSolicitante());
+		cpGrupo = SelecionavelVO.createFrom(configuracao.getCpGrupo(), configuracao.getTipoSolicitante());
 		
 		solicitante = SelecionavelVO.createFrom(configuracao.getSolicitante());
 	}

@@ -4,7 +4,7 @@
 <script src="/sigasr/public/javascripts/detalhe-tabela.js"></script>
 
 <div class="gt-form gt-content-box" style="width: 800px !important; max-width: 800px !important;">
-	<form id="formLista" method="post">
+	<form id="formLista" method="post" enctype="multipart/form-data">
 		<input type="hidden" id="idLista" name="idLista" value="${lista?.idLista}">
 		<input type="hidden" id="id" name="id" value="${lista?.idLista}">
 		<input type="hidden" id="hisIdIni" name="hisIdIni" value="${lista?.hisIdIni}">
@@ -159,7 +159,7 @@
 </div>
 
 #{modal nome:'controleAcesso', titulo:'Cadastrar Permissão'}
-	<form id="formControleAcesso">
+	<form id="formControleAcesso" enctype="multipart/form-data">
 		<div class="gt-form gt-content-box" id="modal-permissao">
 			<div>
 				<input id="idConfiguracao" type="hidden" name="idConfiguracao"> 

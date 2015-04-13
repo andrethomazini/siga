@@ -17,10 +17,16 @@ import br.gov.jfrj.siga.dp.DpPessoa;
 public class Correio extends Mailer {
 
 	public static void notificarAbertura(SrSolicitacao sol) {
-		if (sol.solicitante.getEmailPessoa() == null)
+		DpPessoa pessoaAtual = sol.solicitante.getPessoaAtual();
+		if (pessoaAtual == null || pessoaAtual.getEmailPessoa() == null)
 			return;
-		setSubject("Abertura da solicitação " + sol.getCodigo());
-		addRecipient(sol.solicitante.getEmailPessoa());
+		
+		if (sol.isFilha())
+			setSubject("Escalonamento da solicitação " + sol.solicitacaoPai.getCodigo());
+		else
+			setSubject("Abertura da solicitação " + sol.getCodigo());
+		
+		addRecipient(pessoaAtual.getEmailPessoa());
 		setFrom("Administrador do Siga<sigadocs@jfrj.jus.br>");
 		send(sol);
 
@@ -41,19 +47,25 @@ public class Correio extends Mailer {
 		SrSolicitacao sol = movimentacao.solicitacao.getSolicitacaoAtual();
 		setSubject("Movimentação da solicitação " + sol.getCodigo());
 		List<String> recipients = new ArrayList<String>();
-
+		String email = null;
+		
 		DpPessoa atendenteSolPai = sol.solicitacaoPai.getAtendente();
-		if (atendenteSolPai != null && atendenteSolPai.getEmailPessoa() != null)
-			recipients.add(atendenteSolPai.getEmailPessoa());
+		if (atendenteSolPai != null) {
+			email = atendenteSolPai.getPessoaAtual().getEmailPessoa();
+			if (email != null)
+				recipients.add(email);
+		} 
 		else {
 			DpLotacao lotaAtendenteSolPai = sol.solicitacaoPai
 					.getLotaAtendente();
 			if (lotaAtendenteSolPai != null)
 				for (DpPessoa pessoaDaLotacao : lotaAtendenteSolPai
 						.getDpPessoaLotadosSet())
-					if (pessoaDaLotacao.getDataFim() == null
-							&& pessoaDaLotacao.getEmailPessoa() != null)
-						recipients.add(pessoaDaLotacao.getEmailPessoa());
+					if (pessoaDaLotacao.getDataFim() == null) {
+						email = pessoaDaLotacao.getPessoaAtual().getEmailPessoa();
+						if (email != null)
+							recipients.add(email);
+					}
 		}
 
 		if (recipients.size() > 0)

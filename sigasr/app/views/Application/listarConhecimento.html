@@ -5,7 +5,7 @@
                 <h2>Cadastro de Conhecimento</h2>
 
                 <div class="gt-form gt-content-box">
-                        <form>
+                        <form enctype="multipart/form-data">
                         	<div class="gt-form-row">
 								<label>Item de Configuração</label> 
 								#{selecao tipo:'item', nome:'itemConfiguracao', onchange:'mostraOuEscondeAcao();carregarRelacionados();'/}
@@ -14,7 +14,7 @@
 								<div id="gc-ancora-item"></div>
 							</div>
 							<div class="gt-form-row" id="divAcao">
-								<label>Ação</label> #{selecao tipo:'acao', nome:'acao', onchange:'carregarRelacionados();' /}
+								<label>A&ccedil;&atilde;o</label> #{selecao tipo:'acao', nome:'acao', onchange:'carregarRelacionados();' /}
 							</div>
 							<div style="display: inline-block" >
 								<div id="gc-ancora-item-acao"></div>
