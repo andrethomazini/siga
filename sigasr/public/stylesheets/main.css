@@ -1,5 +1,6 @@
 .dataTables_div {
     padding-top: 10px;
+    min-width: 400px;
 }
 
 .dataTables_length {	
@@ -140,6 +141,7 @@ td.padding-table {
 	font-weight: bold; 
 	border-bottom: 1px solid #ccc !important; 
 	padding: 7px 10px;
+	/*width: 100% !important;*/
 }
 
 .solicitacao-dados {
@@ -147,6 +149,10 @@ td.padding-table {
 	padding: 7px 10px !important; 
 	border-bottom: 1px solid #ccc !important; 
 	text-align:justify;
+}
+
+.gt-celula-nowrap.solicitacao-dados {
+	width: 100% !important;
 }
 
 .solicitacao-remover {
